@@ -60,6 +60,7 @@ namespace MailManager.Server.Controllers
         {
             var contact = await _context.Contacts
                 .Include(c => c.Groups)
+                .ThenInclude(g => g.Contacts)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (contact == null)
