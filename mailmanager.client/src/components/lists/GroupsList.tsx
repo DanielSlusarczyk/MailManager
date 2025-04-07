@@ -1,8 +1,9 @@
 ﻿import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import GroupFormModal from './GroupFormModal';
-import { Mail, Plus } from 'lucide-react';
-import SendEmailModal from './SendEmailModal';
+import { Mail } from 'lucide-react';
+import GroupFormModal from '../modals/GroupFormModal';
+import SendEmailModal from '../modals/SendEmailModal';
+import CustomList from './CustomList';
 
 interface Contact {
     id: number;
@@ -72,20 +73,14 @@ const GroupsList: React.FC = () => {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Grupy kontaktów</h1>
-                <button
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={() => setModalOpen(true)}
-                >
-                    <Plus size={18} />
-                    Dodaj grupę
-                </button>
-            </div>
-
-            <div className="grid gap-4">
-                {groups.map((group) => (
+        <>
+            <CustomList
+                title="Contacts Groups"
+                buttonLabel="Add new group"
+                onAddClick={() => setModalOpen(true)}
+                items={groups}
+                emptyMessage="You have no groups yet"
+                renderItem={(group) => (
                     <div
                         key={group.id}
                         className="bg-white shadow-md rounded-2xl p-4 flex justify-between items-center"
@@ -93,16 +88,16 @@ const GroupsList: React.FC = () => {
                         <div>
                             <h3 className="text-lg font-semibold">{group.name}</h3>
                             <p className="text-gray-500">
-                                {group.contacts ?? 0} kontakt{group.contacts === 1 ? '' : 'ów'}
+                                Number of contacts: {group.contacts ?? 0}
                             </p>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                             <button
                                 onClick={() => handleOpenEmailModal(group.id, group.name)}
-                                className={`text-black hover:text-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className="text-black hover:text-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled={group.isJobInProgress}
                             >
-                                <Mail size={20} />
+                                <Mail size={25} />
                             </button>
                             {!group.isJobInProgress && group.lastJobFinishedAt && (
                                 <p className="text-[10px] text-gray-500 text-center leading-tight">
@@ -114,8 +109,8 @@ const GroupsList: React.FC = () => {
                             )}
                         </div>
                     </div>
-                ))}
-            </div>
+                )}
+            />
 
             <GroupFormModal
                 isOpen={modalOpen}
@@ -129,7 +124,7 @@ const GroupsList: React.FC = () => {
                 onSend={handleSendEmail}
                 groupName={selectedGroupName}
             />
-        </div>
+        </>
     );
 };
 

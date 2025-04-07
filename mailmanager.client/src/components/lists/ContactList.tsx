@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Settings, X } from 'lucide-react';
+import { Settings, X } from 'lucide-react';
 import axios from 'axios';
-import ContactFormModal from './ContactFormModal';
+import ContactFormModal from '../modals/ContactFormModal';
+import CustomList from './CustomList';
 
 interface Contact {
     id: number;
@@ -51,19 +52,16 @@ const ContactsList: React.FC = () => {
 
     return (
         <>
-            <h1 className="text-2xl font-bold mb-4">Contacts</h1>
-            <button
-                className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded"
-                onClick={() => {
+            <CustomList
+                title="Contacts"
+                buttonLabel="Add new contact"
+                onAddClick={() => {
                     setEditingContact(null);
                     setModalOpen(true);
                 }}
-            >
-                <Plus size={18} />
-                Dodaj nowy kontakt
-            </button>
-            <div className="p-6 grid gap-4">
-                {contacts && contacts.map((contact) => (
+                items={contacts}
+                emptyMessage="You have no contacts yet"
+                renderItem={(contact) => (
                     <div
                         key={contact.id}
                         className="shadow-xl rounded-2xl p-4 bg-white flex justify-between items-center"
@@ -87,8 +85,8 @@ const ContactsList: React.FC = () => {
                             </button>
                         </div>
                     </div>
-                ))}
-            </div>
+                )}
+            />
 
             <ContactFormModal
                 isOpen={modalOpen}
