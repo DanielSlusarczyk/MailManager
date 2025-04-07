@@ -1,11 +1,11 @@
 ﻿import React, { useState, useEffect } from 'react';
 import CustomModal from './CustomModal';
-import { Contact } from '../../interfaces/Contact';
+import { Contact, SaveContact } from '../../interfaces/Contact';
 
 interface ContactFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (contact: Contact) => void;
+    onSave: (contact: SaveContact) => void;
     contactToEdit?: Contact | null;
 }
 
@@ -26,9 +26,7 @@ const ContactFormModal: React.FC<ContactFormModalProps> = ({ isOpen, onClose, on
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (contactToEdit?.id) {
-            onSave({ id: contactToEdit?.id, name, email });
-        }
+        onSave({ id:contactToEdit?.id, name, email });
         onClose();
     };
 
