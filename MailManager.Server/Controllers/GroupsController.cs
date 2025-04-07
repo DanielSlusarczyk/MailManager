@@ -1,6 +1,7 @@
 ﻿using MailManager.Server.Data.DTO;
+using MailManager.Server.Data.Mappers;
+using MailManager.Server.Data.Models;
 using MailManager.Server.Database;
-using MailManager.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,9 +9,9 @@ namespace MailManager.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ContactGroupsController(AppDbContext context) : ControllerBase
+    public class GroupsController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context = context;
+        private readonly ApplicationDbContext _context = context;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
@@ -34,21 +35,22 @@ namespace MailManager.Server.Controllers
 
             var jobsDict = jobsInfo.ToDictionary(j => j.GroupId);
 
-
-
             return groups.Select(group =>
             {
                 jobsDict.TryGetValue(group.Id, out var jobInfo);
 
-                return new GroupDto
+                bool IsJobInProgress = jobInfo?.HasInProgress ?? false;
+                
+                DateTime? LastJobFinishedAt = null;
+                int? LastJobFailedCount = null;
+
+                if(!IsJobInProgress)
                 {
-                    Id = group.Id,
-                    Name = group.Name,
-                    Contacts = group.Contacts.Count,
-                    IsJobInProgress = jobInfo?.HasInProgress ?? false,
-                    LastJobFinishedAt = jobInfo?.HasInProgress == true ? null : jobInfo?.LastProcessed?.FinishedAt,
-                    LastJobFailedCount = jobInfo?.HasInProgress == true ? null : jobInfo?.LastProcessed?.FailedCount
-                };
+                    LastJobFinishedAt = jobInfo?.LastProcessed?.FinishedAt;
+                    LastJobFailedCount = jobInfo?.LastProcessed?.FailedCount;
+                }
+
+                return GroupMapper.ToDto(group, IsJobInProgress, LastJobFinishedAt, LastJobFailedCount);
             }).ToList();
         }
 
@@ -62,21 +64,20 @@ namespace MailManager.Server.Controllers
             if (group == null)
                 return NotFound();
 
-            var groupDto = new GroupDto
-            {
-                Id = group.Id,
-                Name = group.Name
-            };
-
-            return groupDto;
+            return GroupMapper.ToDto(group);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Group>> CreateGroup(CreateGroupDto dto)
+        public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto dto)
         {
             var contacts = await _context.Contacts
                 .Where(c => dto.ContactIds.Contains(c.Id))
                 .ToListAsync();
+
+            if(contacts == null || contacts.Count == 0)
+            {
+                return BadRequest();
+            }
 
             var group = new Group
             {

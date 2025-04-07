@@ -1,9 +1,9 @@
-﻿using MailManager.Server.Models;
+﻿using MailManager.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MailManager.Server.Database
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
         public DbSet<Contact> Contacts { get; set; }
 

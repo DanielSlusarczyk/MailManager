@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MailManager.Server.Models
+namespace MailManager.Server.Data.Models
 {
     public class Contact
     {

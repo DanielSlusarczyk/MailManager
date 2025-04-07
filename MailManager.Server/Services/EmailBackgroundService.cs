@@ -13,11 +13,14 @@ namespace MailManager.Server.Services
             while (!stoppingToken.IsCancellationRequested)
             {
                 using var scope = _services.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
 
                 var pendingJobs = await context.EmailJobs
                     .Where(j => !j.IsProcessed)
                     .ToListAsync(stoppingToken);
+
+                emailService.ValidateConfiguration();
 
                 foreach (var job in pendingJobs)
                 {
@@ -34,7 +37,7 @@ namespace MailManager.Server.Services
                     {
                         try
                         {
-                            _logger.LogInformation($"Sending email to {contact.Email}: {job.Subject}");
+                            await emailService.SendEmailAsync(contact.Email, job.Subject, job.Message);
                         }
                         catch (Exception ex)
                         {
@@ -44,7 +47,7 @@ namespace MailManager.Server.Services
                     }
 
                     job.IsProcessed = true;
-                    job.FinishedAt = DateTime.UtcNow;
+                    job.FinishedAt = DateTime.Now;
                     job.FailedCount = failedCount;
 
                     await context.SaveChangesAsync(stoppingToken);
