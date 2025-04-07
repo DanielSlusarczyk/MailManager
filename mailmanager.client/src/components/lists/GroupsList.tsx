@@ -12,7 +12,6 @@ interface GroupsListProps {
     onSave: (name: string, contactIds: number[]) => void;
     onDelete: (id: number) => void;
     onSendEmail: (subject: string, message: string, groupId: number) => void;
-
 }
 
 const GroupsList: React.FC<GroupsListProps> = ({ groups, contacts, onSave, onDelete, onSendEmail }) => {

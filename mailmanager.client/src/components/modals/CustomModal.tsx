@@ -7,6 +7,7 @@ interface CustomModalProps {
     title: React.ReactNode;
     children: React.ReactNode;
     submitLabel?: string;
+    isSaveDisabled?: boolean;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -16,6 +17,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
     title,
     children,
     submitLabel = 'Save',
+    isSaveDisabled = false,
 }) => {
     if (!isOpen) return null;
 
@@ -35,7 +37,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                            disabled={isSaveDisabled}
+                            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {submitLabel}
                         </button>

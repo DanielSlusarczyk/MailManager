@@ -32,6 +32,8 @@ const GroupFormModal: React.FC<GroupFormModalProps> = ({ isOpen, onClose, onSave
         onClose();
     };
 
+    const anyContacts = selectedContactIds.length > 0;
+
     if (!isOpen) return null;
 
     return (
@@ -40,6 +42,7 @@ const GroupFormModal: React.FC<GroupFormModalProps> = ({ isOpen, onClose, onSave
             onClose={onClose}
             onSubmit={handleSubmit}
             title="Add new group"
+            isSaveDisabled={!anyContacts}
         >
             <input
                 type="text"
