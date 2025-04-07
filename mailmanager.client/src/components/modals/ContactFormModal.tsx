@@ -25,7 +25,10 @@ const ContactFormModal: React.FC<ContactFormModalProps> = ({ isOpen, onClose, on
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave({ id: contactToEdit?.id, name, email });
+
+        if (contactToEdit?.id) {
+            onSave({ id: contactToEdit?.id, name, email });
+        }
         onClose();
     };
 
