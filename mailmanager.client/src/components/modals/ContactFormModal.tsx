@@ -1,20 +1,15 @@
 ﻿import React, { useState, useEffect } from 'react';
 import CustomModal from './CustomModal';
+import { Contact } from '../../interfaces/Contact';
 
-interface Contact {
-    id?: number;
-    name: string;
-    email: string;
-}
-
-interface Props {
+interface ContactFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (contact: Contact) => void;
     contactToEdit?: Contact | null;
 }
 
-const ContactFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, contactToEdit }) => {
+const ContactFormModal: React.FC<ContactFormModalProps> = ({ isOpen, onClose, onSave, contactToEdit }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
 

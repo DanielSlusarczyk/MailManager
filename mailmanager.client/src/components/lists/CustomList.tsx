@@ -19,7 +19,7 @@ const CustomList = <T,>({
     renderItem,
 }: CustomListProps<T>) => {
     return (
-        <div className="p-6">
+        <div className="p-6 mb-5 bg-gray-100 rounded-xl">
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">{title}</h1>
                 <button
@@ -31,7 +31,7 @@ const CustomList = <T,>({
                 </button>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-4 max-h-[500px] p-2 rounded overflow-y-auto">
                 {items.length > 0 ? (
                     items.map(renderItem)
                 ) : (

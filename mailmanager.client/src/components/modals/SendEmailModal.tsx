@@ -1,14 +1,14 @@
 ﻿import { useEffect, useState } from 'react';
 import CustomModal from './CustomModal';
 
-interface Props {
+interface SendEmailModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (subject: string, message: string) => void;
     groupName: string;
 }
 
-const SendEmailModal: React.FC<Props> = ({ isOpen, onClose, onSend, groupName }) => {
+const SendEmailModal: React.FC<SendEmailModalProps> = ({ isOpen, onClose, onSend, groupName }) => {
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
 

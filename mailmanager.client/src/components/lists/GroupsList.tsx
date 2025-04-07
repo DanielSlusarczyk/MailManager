@@ -1,38 +1,25 @@
-﻿import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Mail } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { Mail, X } from 'lucide-react';
 import GroupFormModal from '../modals/GroupFormModal';
 import SendEmailModal from '../modals/SendEmailModal';
 import CustomList from './CustomList';
+import { Group } from '../../interfaces/Group';
+import { Contact } from '../../interfaces/Contact';
 
-interface Contact {
-    id: number;
-    name: string;
-    email: string;
+interface GroupsListProps {
+    groups: Group[];
+    contacts: Contact[];
+    onSave: (name: string, contactIds: number[]) => void;
+    onDelete: (id: number) => void;
+    onSendEmail: (subject: string, message: string, groupId: number) => void;
+
 }
 
-interface ContactGroup {
-    id: number;
-    name: string;
-    contacts: number;
-
-    isJobInProgress: boolean;
-    lastJobFinishedAt?: string;
-    lastJobFailedCount?: number;
-}
-
-const GroupsList: React.FC = () => {
-    const [groups, setGroups] = useState<ContactGroup[]>([]);
-    const [contacts, setContacts] = useState<Contact[]>([]);
+const GroupsList: React.FC<GroupsListProps> = ({ groups, contacts, onSave, onDelete, onSendEmail }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [emailModalOpen, setEmailModalOpen] = useState(false);
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
     const [selectedGroupName, setSelectedGroupName] = useState('');
-
-    useEffect(() => {
-        fetchGroups();
-        fetchContacts();
-    }, []);
 
     const handleOpenEmailModal = (groupId: number, groupName: string) => {
         setSelectedGroupId(groupId);
@@ -43,33 +30,15 @@ const GroupsList: React.FC = () => {
     const handleSendEmail = async (subject: string, message: string) => {
         if (!selectedGroupId) return;
 
-        await axios.post('/api/emailjob', {
-            subject,
-            message,
-            groupId: selectedGroupId
-        });
-
-        await fetchGroups();
         setEmailModalOpen(false);
+
+        onSendEmail(subject, message, selectedGroupId);
     };
 
-    const fetchGroups = async () => {
-        const response = await axios.get<ContactGroup[]>('/api/contactgroups');
-        setGroups(response.data);
-    };
-
-    const fetchContacts = async () => {
-        const response = await axios.get<Contact[]>('/api/contacts');
-        setContacts(response.data);
-    };
 
     const handleSaveGroup = async (name: string, contactIds: number[]) => {
-        await axios.post('/api/contactgroups', {
-            name,
-            contactIds
-        });
         setModalOpen(false);
-        fetchGroups();
+        onSave(name, contactIds);
     };
 
     return (
@@ -92,18 +61,24 @@ const GroupsList: React.FC = () => {
                             </p>
                         </div>
                         <div className="flex flex-col items-end gap-2">
-                            <button
-                                onClick={() => handleOpenEmailModal(group.id, group.name)}
-                                className="text-black hover:text-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={group.isJobInProgress}
-                            >
-                                <Mail size={25} />
-                            </button>
+                            <div>
+                                <button
+                                    onClick={() => handleOpenEmailModal(group.id, group.name)}
+                                    className="text-black hover:text-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={group.isJobInProgress}
+                                >
+                                    <Mail size={25} />
+                                </button>
+                                <button onClick={() => onDelete(group.id)}>
+                                    <X size={25} className="hover:text-red-600 transition-colors" />
+                                </button>
+                            </div>
+
                             {!group.isJobInProgress && group.lastJobFinishedAt && (
                                 <p className="text-[10px] text-gray-500 text-center leading-tight">
                                     Last sent: {new Date(group.lastJobFinishedAt).toLocaleString()}
                                     {group.lastJobFailedCount && group.lastJobFailedCount > 0
-                                        ? `(${group.lastJobFailedCount} failures)`
+                                        ? ` (${group.lastJobFailedCount} failures)`
                                         : ''}
                                 </p>
                             )}

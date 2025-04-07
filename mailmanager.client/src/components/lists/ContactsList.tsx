@@ -1,53 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Settings, X } from 'lucide-react';
-import axios from 'axios';
 import ContactFormModal from '../modals/ContactFormModal';
 import CustomList from './CustomList';
+import { Contact } from '../../interfaces/Contact';
 
-interface Contact {
-    id: number;
-    name: string;
-    email: string;
+interface ContactsListProps {
+    contacts: Contact[];
+    onDelete: (id: number) => void;
+    onSave: (contact: Partial<Contact>) => void;
 }
 
-const ContactsList: React.FC = () => {
-    const [contacts, setContacts] = useState<Contact[]>([]);
+const ContactsList: React.FC<ContactsListProps> = ({ contacts, onDelete, onSave }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
-    useEffect(() => {
-        fetchContacts();
-    }, []);
-
-    const fetchContacts = async () => {
-        try {
-            const response = await axios.get<Contact[]>('/api/contacts');
-            setContacts(response.data);
-        } catch (error) {
-            console.error('Failed to fetch contacts', error);
-        }
-    };
-
-    const deleteContact = async (id: number) => {
-        try {
-            await axios.delete(`/api/contacts/${id}`);
-            setContacts((prev) => prev.filter((contact) => contact.id !== id));
-        } catch (error) {
-            console.error('Failed to delete contact', error);
-        }
-    };
-
-
     const handleSave = async (contact: Partial<Contact>) => {
-        if (contact.id) {
-            await axios.put(`/api/contacts/${contact.id}`, contact);
-        } else {
-            const response = await axios.post('/api/contacts', contact);
-            contact = response.data;
-        }
         setModalOpen(false);
         setEditingContact(null);
-        fetchContacts();
+
+        onSave(contact);
     };
 
     return (
@@ -64,10 +35,10 @@ const ContactsList: React.FC = () => {
                 renderItem={(contact) => (
                     <div
                         key={contact.id}
-                        className="shadow-xl rounded-2xl p-4 bg-white flex justify-between items-center"
+                        className="shadow-md rounded-2xl p-4 bg-white flex justify-between items-center"
                     >
                         <div>
-                            <h3 className="text-lg font-semibold">{contact.name}</h3>
+                            <h3 className="text-lg font-semibold max-w-56 overflow-hidden">{contact.name} </h3>
                             <p className="text-gray-500">{contact.email}</p>
                         </div>
                         <div>
@@ -80,7 +51,7 @@ const ContactsList: React.FC = () => {
                             >
                                 <Settings size={25} />
                             </button>
-                            <button onClick={() => deleteContact(contact.id)}>
+                            <button onClick={() => onDelete(contact.id)}>
                                 <X size={25} className="hover:text-red-600 transition-colors" />
                             </button>
                         </div>
@@ -95,7 +66,6 @@ const ContactsList: React.FC = () => {
                 contactToEdit={editingContact}
             />
         </>
-
     );
 };
 

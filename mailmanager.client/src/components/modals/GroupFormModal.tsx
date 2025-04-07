@@ -1,20 +1,15 @@
 ﻿import React, { useEffect, useState } from 'react';
 import CustomModal from './CustomModal';
+import { Contact } from '../../interfaces/Contact';
 
-interface Contact {
-    id: number;
-    name: string;
-    email: string;
-}
-
-interface Props {
+interface GroupFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (groupName: string, contactIds: number[]) => void;
     availableContacts: Contact[];
 }
 
-const GroupFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, availableContacts }) => {
+const GroupFormModal: React.FC<GroupFormModalProps> = ({ isOpen, onClose, onSave, availableContacts }) => {
     const [name, setName] = useState('');
     const [selectedContactIds, setSelectedContactIds] = useState<number[]>([]);
 
@@ -62,7 +57,7 @@ const GroupFormModal: React.FC<Props> = ({ isOpen, onClose, onSave, availableCon
                             checked={selectedContactIds.includes(contact.id)}
                             onChange={() => toggleContact(contact.id)}
                         />
-                        <span>{contact.name} ({contact.email})</span>
+                        <span className="overflow-hidden max-w-96">{contact.name} ({contact.email})</span>
                     </label>
                 ))}
             </div>
