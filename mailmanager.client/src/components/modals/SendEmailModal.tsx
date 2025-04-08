@@ -41,6 +41,7 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({ isOpen, onClose, onSend
                 className="w-full border border-gray-300 p-2 rounded"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
+                maxLength={150}
                 required
             />
             <textarea
@@ -48,6 +49,7 @@ const SendEmailModal: React.FC<SendEmailModalProps> = ({ isOpen, onClose, onSend
                 className="w-full border border-gray-300 p-2 rounded h-32 resize-none"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                maxLength={5000}
                 required
             />
         </CustomModal>

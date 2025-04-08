@@ -50,6 +50,7 @@ const GroupFormModal: React.FC<GroupFormModalProps> = ({ isOpen, onClose, onSave
                 className="w-full border border-gray-300 p-2 rounded"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={100}
                 required
             />
             <div className="max-h-60 overflow-y-auto border border-gray-200 rounded p-2">
